@@ -1,7 +1,7 @@
 import logging
 
 from django.core.urlresolvers import reverse
-
+from django.core.mail import send_mail
 from django.shortcuts import render, get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
@@ -72,6 +72,9 @@ def reservation_view(request, passenger_uuid):
 
 def success_view(request, reservation_uuid):
     reservation = get_object_or_404(Reservation, uuid=reservation_uuid)
+    send_mail('SWACI Confirmation', 
+        'Sweet!! We got your flight info and will automatically check you in 24 hours before takeoff. Another email will be sent to ' + reservation.passenger.email + ' with your boarding pass.', 
+        'admin@swautocheckin.com', [reservation.passenger.email], fail_silently=False)
     return render(request, 'success.html', {
         'reservation': reservation
     })
